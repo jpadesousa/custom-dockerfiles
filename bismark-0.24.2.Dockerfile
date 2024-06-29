@@ -2,13 +2,12 @@ FROM python:3.9.19-slim-bullseye
 
 LABEL maintainer="João Agostinho de Sousa <joao.agostinhodesousa@hest.ethz.ch>"
 
-# Package versions
-ARG BISMARK_VERSION=0.24.2
-ARG BOWTIE2_VERSION=2.5.4
-ARG SAMTOOLS_VERSION=1.20
+# Update pip and setuptools
+RUN pip install --no-cache-dir --upgrade pip setuptools
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
     wget \
     build-essential \
     libncurses5-dev \
@@ -18,7 +17,13 @@ RUN apt-get update && apt-get install -y \
     perl \
     cpanminus \
     && cpanm File::Copy::Recursive \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Package versions
+ARG BISMARK_VERSION=0.24.2
+ARG BOWTIE2_VERSION=2.5.4
+ARG SAMTOOLS_VERSION=1.20
 
 # Install Bowtie2
 RUN wget https://github.com/BenLangmead/bowtie2/archive/v${BOWTIE2_VERSION}.tar.gz \
@@ -45,10 +50,15 @@ RUN wget https://github.com/FelixKrueger/Bismark/archive/refs/tags/v${BISMARK_VE
     && rm v${BISMARK_VERSION}.tar.gz
 
 # Add Bismark scripts to PATH by creating symbolic links in /usr/local/bin
-RUN find /Bismark-${BISMARK_VERSION} -type f -exec ln -s {} /usr/local/bin \;
+RUN find /Bismark-${BISMARK_VERSION} -type f -executable -exec ln -s {} /usr/local/bin \;
 
-# Cleanup
-RUN apt-get clean
+# Create a non-root user to run the application
+RUN groupadd -r bismarkuser && \
+    useradd --no-log-init -r -g bismarkuser bismarkuser && \
+    chown -R bismarkuser:bismarkuser /Bismark-${BISMARK_VERSION}
+    
+# Switch to non-root user
+USER bismarkuser
 
 # Set working directory to Bismark directory
 WORKDIR /Bismark-${BISMARK_VERSION}

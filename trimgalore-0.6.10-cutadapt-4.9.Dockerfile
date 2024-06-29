@@ -2,22 +2,24 @@ FROM python:3.9.19-slim-bullseye
 
 LABEL maintainer="João Agostinho de Sousa <joao.agostinhodesousa@hest.ethz.ch>"
 
-# Package versions
-ARG CUTADAPT_VERSION=4.9
-ARG FASTQC_VERSION=0.12.1
-ARG TRIM_GALORE_VERSION=0.6.10
-
 # Install dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
     curl \
     perl \
     default-jre \
     isal \
     pigz \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Package versions
+ARG CUTADAPT_VERSION=4.9
+ARG FASTQC_VERSION=0.12.1
+ARG TRIM_GALORE_VERSION=0.6.10
+
 # Install cutadapt
-RUN pip install --no-cache-dir --upgrade pip && \
+RUN pip install --no-cache-dir --upgrade pip setuptools && \
     pip install --no-cache-dir cutadapt==${CUTADAPT_VERSION}
 
 # Install FastQC
@@ -35,5 +37,10 @@ RUN curl -fsSL https://github.com/FelixKrueger/TrimGalore/archive/${TRIM_GALORE_
     mv TrimGalore-${TRIM_GALORE_VERSION}/trim_galore /usr/local/bin/trim_galore && \
     rm trim_galore.tar.gz && \
     rm -r TrimGalore-${TRIM_GALORE_VERSION}
+
+# Create a non-root user and switch to it
+RUN groupadd -r trimgaloreuser && \
+    useradd --no-log-init -r -g trimgaloreuser trimgaloreuser
+USER trimgaloreuser
 
 CMD ["trim_galore"]
