@@ -36,8 +36,8 @@ RUN find /sradownloader-axel-${SRADOWNLOADER_VERSION} -type f -executable -exec 
 RUN mkdir /downloads
 
 # Create a non-root user and switch to it
-RUN groupadd -r sradownloaderuser --gid=1000 && \
-    useradd --no-log-init -r -g sradownloaderuser --uid=1000 sradownloaderuser && \
+RUN groupadd -r sradownloaderuser && \
+    useradd --no-log-init -r -g sradownloaderuser sradownloaderuser && \
     chown -R sradownloaderuser:sradownloaderuser /downloads
 
 USER sradownloaderuser
