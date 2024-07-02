@@ -4,6 +4,7 @@ FROM debian:bullseye-slim as git-builder
 ARG GIT_VERSION=2.45.2
 
 RUN apt-get update && apt-get install -y \
+    procps \
     curl \
     build-essential \
     libssl-dev \

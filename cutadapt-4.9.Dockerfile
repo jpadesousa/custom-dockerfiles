@@ -4,8 +4,10 @@ LABEL maintainer="João Agostinho de Sousa <joao.agostinhodesousa@hest.ethz.ch>"
 
 # Update system packages
 RUN apt-get update && apt-get upgrade -y && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y --no-install-recommends \
+    procps \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Package version
 ARG CUTADAPT_VERSION=4.9

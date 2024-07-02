@@ -5,6 +5,7 @@ LABEL maintainer="João Agostinho de Sousa <joao.agostinhodesousa@hest.ethz.ch>"
 # Install dependencies
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
+    procps \
     curl \
     perl \
     default-jre \

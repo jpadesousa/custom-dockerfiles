@@ -3,7 +3,9 @@ FROM python:3.9.19-slim-bullseye
 LABEL maintainer="João Agostinho de Sousa <joao.agostinhodesousa@hest.ethz.ch>"
 
 # Update and upgrade system packages
-RUN apt-get update && apt-get upgrade -y \
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
+    procps \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

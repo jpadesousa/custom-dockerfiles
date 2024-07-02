@@ -1,9 +1,9 @@
-# Build stage for compiling and installing dependencies
 FROM python:3.9.19-slim-bullseye as builder
 
 # Install build dependencies
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
+    procps \
     build-essential \
     python3-dev \
     libffi-dev \
@@ -14,9 +14,8 @@ RUN apt-get update && apt-get upgrade -y && \
 ARG MACS3_VERSION=3.0.1
 ARG CYKHASH_VERSION=2.0.1
 
-# Install pip dependencies in a virtual environment
-RUN python3 -m venv /venv
 # Update pip and install MACS3 and cykhash
+RUN python3 -m venv /venv
 RUN /venv/bin/pip install --no-cache-dir --upgrade pip setuptools wheel && \
     /venv/bin/pip install --no-cache-dir MACS3==${MACS3_VERSION} cykhash==${CYKHASH_VERSION}
 
