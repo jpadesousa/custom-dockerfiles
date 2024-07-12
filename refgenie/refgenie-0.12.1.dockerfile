@@ -136,13 +136,6 @@ RUN wget https://github.com/pachterlab/kallisto/releases/download/v${KALLISTO_VE
     && cd .. \
     && rm -rf kallisto_linux-v${KALLISTO_VERSION}.tar.gz kallisto
 
-# Install Cell Ranger
-COPY cellranger-${CELLRANGER_VERSION}.tar /opt/
-RUN tar -xzf /opt/cellranger-${CELLRANGER_VERSION}.tar -C /opt/ \
-    && rm /opt/cellranger-${CELLRANGER_VERSION}.tar \
-    && mv /opt/cellranger-${CELLRANGER_VERSION}/bin/* /usr/local/bin/ \
-    && rm -rf /opt/cellranger-${CELLRANGER_VERSION}
-
 # Install Bedtools
 RUN wget https://github.com/arq5x/bedtools2/releases/download/v${BEDTOOLS_VERSION}/bedtools-${BEDTOOLS_VERSION}.tar.gz \
     && tar -xzf bedtools-${BEDTOOLS_VERSION}.tar.gz \
@@ -151,6 +144,12 @@ RUN wget https://github.com/arq5x/bedtools2/releases/download/v${BEDTOOLS_VERSIO
     && mv bin/* /usr/local/bin/ \
     && cd .. \
     && rm -rf bedtools2 bedtools-${BEDTOOLS_VERSION}.tar.gz
+
+# Install Cell Ranger
+COPY cellranger-${CELLRANGER_VERSION}.tar /opt/
+RUN tar -xzf /opt/cellranger-${CELLRANGER_VERSION}.tar -C /opt/ \
+    && rm /opt/cellranger-${CELLRANGER_VERSION}.tar
+ENV PATH="/opt/cellranger-${CELLRANGER_VERSION}:${PATH}"
 
 # Install refgenie
 RUN pip install --no-cache-dir --upgrade pip setuptools && \
