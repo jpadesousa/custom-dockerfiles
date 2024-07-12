@@ -29,6 +29,7 @@ LABEL maintainer="João Agostinho de Sousa <joao.agostinhodesousa@hest.ethz.ch>"
 
 ARG NFCORE_VERSION=2.14.1
 ARG NEXTFLOW_VERSION=24.04.2
+ARG APPTAINER_VERSION=1.3.3
 
 # Copy Git from the build stage
 COPY --from=git-builder /usr/bin/git /usr/bin/git
@@ -43,6 +44,20 @@ RUN apt-get update && apt-get install -y \
 # Install Nextflow
 RUN curl -fsSL https://github.com/nextflow-io/nextflow/releases/download/v${NEXTFLOW_VERSION}/nextflow-${NEXTFLOW_VERSION}-all -o /usr/local/bin/nextflow && \
     chmod +x /usr/local/bin/nextflow
+
+# Install Apptainer (Singularity)
+RUN apt-get update && apt-get install -y \
+    wget \
+    libfuse3-3 \
+    uidmap \
+    squashfs-tools \
+    fakeroot \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && wget https://github.com/apptainer/apptainer/releases/download/v${APPTAINER_VERSION}/apptainer_${APPTAINER_VERSION}_amd64.deb \
+    && dpkg -i apptainer_${APPTAINER_VERSION}_amd64.deb \
+    && rm apptainer_${APPTAINER_VERSION}_amd64.deb \
+    && ln -s /usr/bin/apptainer /usr/local/bin/singularity
 
 # Install pip dependencies
 RUN pip install --no-cache-dir --upgrade pip setuptools && \
