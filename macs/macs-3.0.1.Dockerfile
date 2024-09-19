@@ -1,4 +1,4 @@
-FROM python:3.9.19-slim-bullseye as builder
+FROM python:3.9.19-slim-bullseye
 
 # Install build dependencies
 RUN apt-get update && apt-get upgrade -y && \
@@ -18,15 +18,6 @@ ARG CYKHASH_VERSION=2.0.1
 RUN python3 -m venv /venv
 RUN /venv/bin/pip install --no-cache-dir --upgrade pip setuptools wheel && \
     /venv/bin/pip install --no-cache-dir MACS3==${MACS3_VERSION} cykhash==${CYKHASH_VERSION}
-
-
-# Final image
-FROM python:3.9.19-slim-bullseye
-
-LABEL maintainer="João Agostinho de Sousa <joao.agostinhodesousa@hest.ethz.ch>"
-
-# Copy virtual environment from builder stage
-COPY --from=builder /venv /venv
 
 # Set environment variables to ensure the virtual environment is used
 ENV PATH="/venv/bin:$PATH"

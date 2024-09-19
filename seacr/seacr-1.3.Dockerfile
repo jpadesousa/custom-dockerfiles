@@ -36,14 +36,19 @@ RUN wget https://github.com/arq5x/bedtools2/releases/download/v${BEDTOOLS_VERSIO
 # Install SEACR
 RUN wget https://github.com/FredHutch/SEACR/archive/refs/tags/v${SEACR_VERSION}.tar.gz \
     && tar -xzf v${SEACR_VERSION}.tar.gz \
-    && mv SEACR-${SEACR_VERSION}/SEACR_1.3* /usr/local/bin/ \
-    && chmod +x /usr/local/bin/SEACR_1.3.sh \
-    && rm -rf SEACR-${SEACR_VERSION} v${SEACR_VERSION}.tar.gz
+    && chmod +x SEACR-${SEACR_VERSION}/SEACR_1.3.sh \
+    && rm -rf v${SEACR_VERSION}.tar.gz
 
 # Create a non-root user to run the application
 RUN groupadd -r seacruser && \
     useradd --no-log-init -r -g seacruser seacruser
-    
+
+# Change the ownership of the SEACR folder
+RUN chown -R seacruser:seacruser /SEACR-${SEACR_VERSION}
+
+# Add SEACR to path
+ENV PATH="/SEACR-${SEACR_VERSION}:${PATH}"
+
 # Switch to non-root user
 USER seacruser
 

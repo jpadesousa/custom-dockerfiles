@@ -47,6 +47,7 @@ RUN curl -fsSL https://github.com/nextflow-io/nextflow/releases/download/v${NEXT
 
 # Install Apptainer (Singularity)
 RUN apt-get update && apt-get install -y \
+    procps \
     wget \
     libfuse3-3 \
     uidmap \
